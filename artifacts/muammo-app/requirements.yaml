@@ -1,0 +1,18 @@
+packages:
+  "uuid": "For generating unique problem IDs"
+  "@types/uuid": "Types for uuid package"
+  "date-fns": "For formatting dates nicely"
+  "framer-motion": "For smooth page and bottom sheet transitions"
+  "react-hook-form": "For robust form handling"
+  "@hookform/resolvers": "For Zod form validation"
+  "zod": "For schema validation"
+
+images:
+  - path: "artifacts/muammo-app/public/images/empty-state.png"
+    description: "A friendly, modern 3D illustration of an empty clipboard or map, symbolizing no problems found. Clean white background, soft lighting, matching a blue/white UI theme."
+    aspect_ratio: "1:1"
+
+notes:
+  - "App is strictly frontend-only and persists all data to localStorage under the key 'muammolar'."
+  - "Yandex Maps API is loaded via CDN dynamically for the Map component."
+  - "UI is completely in Uzbek per requirements."
