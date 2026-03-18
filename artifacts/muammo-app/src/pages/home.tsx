@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useSearch } from "wouter";
+import { useSearch, useLocation } from "wouter";
 import { BottomNav } from "@/components/BottomNav";
 import { MapTab } from "@/components/tabs/MapTab";
 import { ListTab } from "@/components/tabs/ListTab";
@@ -7,13 +6,14 @@ import { AddTab } from "@/components/tabs/AddTab";
 import { useMuammolar } from "@/lib/store";
 
 export function Home() {
-  const [searchString, setSearchString] = useSearch();
+  const searchString = useSearch();
+  const [, navigate] = useLocation();
   const searchParams = new URLSearchParams(searchString);
   const activeTab = searchParams.get("tab") || "xarita";
   const { setPendingCoords } = useMuammolar();
 
   const setTab = (tab: string) => {
-    setSearchString(`tab=${tab}`);
+    navigate(`/?tab=${tab}`);
   };
 
   const handleCoordsSelected = () => {
