@@ -153,6 +153,12 @@ importers:
 
   artifacts/api-server:
     dependencies:
+      '@libsql/client':
+        specifier: ^0.x.x
+        version: 0.14.0
+      '@libsql/linux-x64-gnu':
+        specifier: '*'
+        version: 0.4.7
       '@workspace/api-zod':
         specifier: workspace:*
         version: link:../../lib/api-zod
@@ -3418,8 +3424,7 @@ snapshots:
   '@libsql/linux-arm64-musl@0.4.7':
     optional: true
 
-  '@libsql/linux-x64-gnu@0.4.7':
-    optional: true
+  '@libsql/linux-x64-gnu@0.4.7': {}
 
   '@libsql/linux-x64-musl@0.4.7':
     optional: true
