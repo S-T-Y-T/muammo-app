@@ -14,3 +14,45 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Returns a list of all muammolar
+ * @summary Get all muammolar
+ */
+export const GetMuammolarResponseItem = zod.object({
+  id: zod.number(),
+  sarlavha: zod.string(),
+  tavsif: zod.string(),
+  muhimlik: zod.string(),
+  lat: zod.number(),
+  lng: zod.number(),
+  rasm_url: zod.string().nullish(),
+  holat: zod.string(),
+  yaratilgan_sana: zod.date(),
+});
+export const GetMuammolarResponse = zod.array(GetMuammolarResponseItem);
+
+/**
+ * Creates a new muammo and returns it
+ * @summary Create a new muammo
+ */
+export const CreateMuammoBody = zod.object({
+  sarlavha: zod.string(),
+  tavsif: zod.string(),
+  muhimlik: zod.string(),
+  lat: zod.number(),
+  lng: zod.number(),
+  rasm_url: zod.string().nullish(),
+});
+
+export const CreateMuammoResponse = zod.object({
+  id: zod.number(),
+  sarlavha: zod.string(),
+  tavsif: zod.string(),
+  muhimlik: zod.string(),
+  lat: zod.number(),
+  lng: zod.number(),
+  rasm_url: zod.string().nullish(),
+  holat: zod.string(),
+  yaratilgan_sana: zod.date(),
+});

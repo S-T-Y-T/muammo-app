@@ -24,6 +24,39 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /muammolar:
+    get:
+      operationId: getMuammolar
+      tags: [muammolar]
+      summary: Get all muammolar
+      description: Returns a list of all muammolar
+      responses:
+        "200":
+          description: A list of muammolar
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Muammo"
+    post:
+      operationId: createMuammo
+      tags: [muammolar]
+      summary: Create a new muammo
+      description: Creates a new muammo and returns it
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMuammoRequest"
+      responses:
+        "200":
+          description: Created muammo
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Muammo"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +66,57 @@ components:
           type: string
       required:
         - status
-
+    Muammo:
+      type: object
+      properties:
+        id:
+          type: integer
+        sarlavha:
+          type: string
+        tavsif:
+          type: string
+        muhimlik:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        rasm_url:
+          type: string
+          nullable: true
+        holat:
+          type: string
+        yaratilgan_sana:
+          type: string
+          format: date-time
+      required:
+        - id
+        - sarlavha
+        - tavsif
+        - muhimlik
+        - lat
+        - lng
+        - holat
+        - yaratilgan_sana
+    CreateMuammoRequest:
+      type: object
+      properties:
+        sarlavha:
+          type: string
+        tavsif:
+          type: string
+        muhimlik:
+          type: string
+        lat:
+          type: number
+        lng:
+          type: number
+        rasm_url:
+          type: string
+          nullable: true
+      required:
+        - sarlavha
+        - tavsif
+        - muhimlik
+        - lat
+        - lng

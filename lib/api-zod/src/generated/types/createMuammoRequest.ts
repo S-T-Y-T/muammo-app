@@ -5,21 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
-
-export interface Muammo {
-  id: number;
-  sarlavha: string;
-  tavsif: string;
-  muhimlik: string;
-  lat: number;
-  lng: number;
-  rasm_url?: string | null;
-  holat: string;
-  yaratilgan_sana: string;
-}
 
 export interface CreateMuammoRequest {
   sarlavha: string;

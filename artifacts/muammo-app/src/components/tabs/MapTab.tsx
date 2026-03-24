@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useMuammolar } from "@/lib/store";
 import { useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { AlertTriangle, Info, MapPin } from "lucide-react";
+import { AlertTriangle, Info, MapPin, LocateFixed } from "lucide-react";
 
 interface MapTabProps {
   onCoordsSelected: () => void;
@@ -17,6 +17,7 @@ export function MapTab({ onCoordsSelected }: MapTabProps) {
   
   const [bottomSheetOpen, setBottomSheetOpen] = useState(false);
   const [clickedCoords, setClickedCoords] = useState<{lat: number, lng: number} | null>(null);
+  const [userCoords, setUserCoords] = useState<{lat: number, lng: number} | null>(null);
 
   useEffect(() => {
     if (window.ymaps) {
@@ -24,7 +25,8 @@ export function MapTab({ onCoordsSelected }: MapTabProps) {
       return;
     }
     const script = document.createElement("script");
-    script.src = "https://api-maps.yandex.ru/2.1/?lang=uz_UZ";
+    // Adding optional API key and keeping init standard
+    script.src = "https://api-maps.yandex.ru/2.1/?lang=uz_UZ&apikey=24eceecc-b34e-4f05-88ff-1e82a938cbe6";
     script.async = true;
     script.onload = () => window.ymaps.ready(() => setYmapsLoaded(true));
     document.head.appendChild(script);
@@ -33,21 +35,30 @@ export function MapTab({ onCoordsSelected }: MapTabProps) {
   useEffect(() => {
     if (!ymapsLoaded || !mapContainerRef.current) return;
 
-    if (!mapInstanceRef.current) {
-      mapInstanceRef.current = new window.ymaps.Map(mapContainerRef.current, {
-        center: [41.2995, 69.2401], // Tashkent
-        zoom: 12,
-        controls: ['zoomControl']
-      });
+    // Initialize Map
+    const map = new window.ymaps.Map(mapContainerRef.current, {
+      center: [41.2995, 69.2401], // Tashkent
+      zoom: 12,
+      controls: ['zoomControl']
+    });
+    
+    mapInstanceRef.current = map;
 
-      // Handle map click
-      mapInstanceRef.current.events.add('click', (e: any) => {
-        const coords = e.get('coords');
-        setClickedCoords({ lat: coords[0], lng: coords[1] });
-        setBottomSheetOpen(true);
-      });
-    }
+    // Handle map click
+    map.events.add('click', (e: any) => {
+      const coords = e.get('coords');
+      setClickedCoords({ lat: coords[0], lng: coords[1] });
+      setBottomSheetOpen(true);
+    });
 
+    return () => {
+      map.destroy();
+      mapInstanceRef.current = null;
+    };
+  }, [ymapsLoaded]);
+
+  useEffect(() => {
+    if (!mapInstanceRef.current) return;
     const map = mapInstanceRef.current;
     
     // Clear old placemarks
@@ -75,7 +86,41 @@ export function MapTab({ onCoordsSelected }: MapTabProps) {
       map.geoObjects.add(placemark);
     });
 
-  }, [ymapsLoaded, muammolar, setLocation]);
+    // Add user location marker if we have coordinates
+    if (userCoords) {
+      const userPlacemark = new window.ymaps.Placemark(
+        [userCoords.lat, userCoords.lng],
+        {
+          balloonContent: `<b>Sizning joylashuvingiz</b>`,
+        },
+        {
+          preset: 'islands#blueDotIcon',
+        }
+      );
+      map.geoObjects.add(userPlacemark);
+    }
+  }, [ymapsLoaded, muammolar, userCoords, setLocation]);
+
+  const handleMyGeolocation = () => {
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        
+        setUserCoords({ lat, lng });
+
+        if (mapInstanceRef.current) {
+          // Smoothly transition to the user's location
+          mapInstanceRef.current.setCenter([lat, lng], 16, {
+            checkZoomRange: true,
+            duration: 800
+          });
+        }
+      }, (err) => {
+        console.error("Geolocation error:", err);
+      });
+    }
+  };
 
   const handleUrgencySelect = (muhimlik: 'yuqori' | 'orta') => {
     if (clickedCoords) {
@@ -104,6 +149,16 @@ export function MapTab({ onCoordsSelected }: MapTabProps) {
           <MapPin className="w-4 h-4 text-primary" />
           Muammo joyini xaritadan tanlang
         </div>
+      </div>
+
+      {/* Geolocation Button */}
+      <div className="absolute top-4 right-4 z-10">
+        <button 
+          onClick={handleMyGeolocation}
+          className="w-14 h-14 bg-background shadow-xl rounded-full flex items-center justify-center border border-border/50 text-foreground hover:bg-muted active:scale-95 transition-all"
+        >
+          <LocateFixed className="w-6 h-6 text-primary" />
+        </button>
       </div>
 
       {/* Bottom Sheet for Urgency Selection */}

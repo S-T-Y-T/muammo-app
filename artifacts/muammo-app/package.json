@@ -73,6 +73,8 @@
     "vaul": "^1.1.2",
     "vite": "catalog:",
     "wouter": "^3.3.5",
+    "@rollup/rollup-win32-x64-msvc": "^4.0.0",
+    "lightningcss-win32-x64-msvc": "^1.0.0",
     "zod": "catalog:"
   },
   "dependencies": {

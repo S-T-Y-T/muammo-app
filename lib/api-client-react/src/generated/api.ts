@@ -5,18 +5,21 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type { CreateMuammoRequest, HealthStatus, Muammo } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +102,166 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Returns a list of all muammolar
+ * @summary Get all muammolar
+ */
+export const getGetMuammolarUrl = () => {
+  return `/api/muammolar`;
+};
+
+export const getMuammolar = async (
+  options?: RequestInit,
+): Promise<Muammo[]> => {
+  return customFetch<Muammo[]>(getGetMuammolarUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMuammolarQueryKey = () => {
+  return [`/api/muammolar`] as const;
+};
+
+export const getGetMuammolarQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMuammolar>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMuammolar>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMuammolarQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMuammolar>>> = ({
+    signal,
+  }) => getMuammolar({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMuammolar>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMuammolarQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMuammolar>>
+>;
+export type GetMuammolarQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get all muammolar
+ */
+
+export function useGetMuammolar<
+  TData = Awaited<ReturnType<typeof getMuammolar>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getMuammolar>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMuammolarQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Creates a new muammo and returns it
+ * @summary Create a new muammo
+ */
+export const getCreateMuammoUrl = () => {
+  return `/api/muammolar`;
+};
+
+export const createMuammo = async (
+  createMuammoRequest: CreateMuammoRequest,
+  options?: RequestInit,
+): Promise<Muammo> => {
+  return customFetch<Muammo>(getCreateMuammoUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createMuammoRequest),
+  });
+};
+
+export const getCreateMuammoMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMuammo>>,
+    TError,
+    { data: BodyType<CreateMuammoRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createMuammo>>,
+  TError,
+  { data: BodyType<CreateMuammoRequest> },
+  TContext
+> => {
+  const mutationKey = ["createMuammo"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createMuammo>>,
+    { data: BodyType<CreateMuammoRequest> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createMuammo(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateMuammoMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createMuammo>>
+>;
+export type CreateMuammoMutationBody = BodyType<CreateMuammoRequest>;
+export type CreateMuammoMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a new muammo
+ */
+export const useCreateMuammo = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMuammo>>,
+    TError,
+    { data: BodyType<CreateMuammoRequest> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createMuammo>>,
+  TError,
+  { data: BodyType<CreateMuammoRequest> },
+  TContext
+> => {
+  return useMutation(getCreateMuammoMutationOptions(options));
+};
