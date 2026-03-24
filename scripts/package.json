@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "hello": "tsx ./src/hello.ts",
+    "backup-db": "powershell -ExecutionPolicy Bypass -File backup-db.ps1",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "devDependencies": {
